@@ -14,6 +14,7 @@ import {
   PictureOutlined,
   TeamOutlined,
   RiseOutlined,
+  AlignLeftOutlined,
 } from "@ant-design/icons";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, getDocs, query, where } from "firebase/firestore";
@@ -123,6 +124,9 @@ const NavBar: React.FC = () => {
                 <Menu.Item key="polls" icon={<BarChartOutlined />}>
                   <Link to="/polls">Polls</Link>
                 </Menu.Item>
+                <Menu.Item key="forum" icon={<AlignLeftOutlined />}>
+                  <Link to="/forum">Forum</Link>
+                </Menu.Item>
                 <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
                   Log Out
                 </Menu.Item>
@@ -172,6 +176,9 @@ const NavBar: React.FC = () => {
                 </Menu.Item>
                 <Menu.Item key="polls" icon={<BarChartOutlined />}>
                   <Link to="/polls">Polls</Link>
+                </Menu.Item>
+                <Menu.Item key="forum" icon={<AlignLeftOutlined />}>
+                  <Link to="/forum">Forum</Link>
                 </Menu.Item>
                 <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
                   Log Out

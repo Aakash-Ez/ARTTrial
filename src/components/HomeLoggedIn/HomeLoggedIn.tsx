@@ -160,7 +160,7 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
 
       {!isMobile && (
         <Sider
-          width={550}
+          width={450}
           style={{
             background: "#ffffff",
             padding: "20px",

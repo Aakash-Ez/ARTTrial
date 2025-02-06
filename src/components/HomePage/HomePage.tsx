@@ -83,7 +83,7 @@ const HomePage: React.FC = () => {
       {[1, 2, 3, 4].map((index) => (
         <div key={index}>
           <img
-            src={`/homecas/image${index}.jpg`}
+            src={`/homecas/image${index}.png`}
             alt={`Showcase ${index}`}
             style={{ width: "100%", height: "400px", objectFit: "cover" }}
           />

@@ -75,7 +75,7 @@ const ForumPage: React.FC = () => {
   };
 
   return (
-    <Layout style={{ background: "#ffffff", height: "100vh", display: "flex", flexDirection: "column" }}>
+    <Layout style={{ background: "#ffffff", height: '120vh', maxWidth: '100%', display: "flex", flexDirection: "column" }}>
       <Content style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column-reverse", width: "100%" }}>
         <Card title="Forum Chat" style={{ borderRadius: "12px", width: "100%", margin: "auto", boxShadow: "0 4px 12px rgba(0,0,0,0.1)", flex: 1, overflowY: "auto" }}>
           <List
