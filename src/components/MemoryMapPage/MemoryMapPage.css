@@ -1,0 +1,57 @@
+/* MemoryMapPage.css */
+
+.memory-map-container {
+    position: relative;
+    width: 100%;
+    height: 80vh;
+    background: #ffffff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .memory-map-blob {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+  
+  .memory-map-blob:hover {
+    transform: scale(1.2);
+    z-index: 2;
+  }
+  
+  .memory-map-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .memory-map-connections {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+  
+  .memory-map-connections line {
+    stroke: #cccccc;
+    stroke-width: 2;
+    transition: stroke 0.3s ease;
+  }
+  
+  .memory-map-connections line:hover {
+    stroke: #888888;
+  }
+  
