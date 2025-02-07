@@ -53,7 +53,6 @@ const navigate = useNavigate(); // ✅ Initialize navigate
     nickname: "",
     favoriteSpot: "",
     favoriteSubject: "",
-    myGang: "",
     bestMemory: "",
   });
 
@@ -76,7 +75,7 @@ const navigate = useNavigate(); // ✅ Initialize navigate
     setLoading(true);
     try {
       const { name, email, password } = step1Values;
-      const { nickname, favoriteSpot, favoriteSubject, myGang, bestMemory } =
+      const { nickname, favoriteSpot, favoriteSubject, bestMemory } =
         step2Values;
       const { lifeLesson, mbaLifeMiss, mbaLifeEmojis, mbaLifeThemeSong } =
         step3Values;
@@ -93,7 +92,6 @@ const navigate = useNavigate(); // ✅ Initialize navigate
         nickname,
         favoriteSpot,
         favoriteSubject,
-        myGang,
         bestMemory,
         lifeLesson,
         mbaLifeMiss,
@@ -313,12 +311,6 @@ const navigate = useNavigate(); // ✅ Initialize navigate
                   <Form.Item
                     name="favoriteSpot"
                     label="Favorite Spot in IIT"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter your favorite spot!",
-                      },
-                    ]}
                   >
                     <Input
                       prefix={<EnvironmentOutlined />}
@@ -329,12 +321,6 @@ const navigate = useNavigate(); // ✅ Initialize navigate
                   <Form.Item
                     name="favoriteSubject"
                     label="Favorite Subject"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter your favorite subject!",
-                      },
-                    ]}
                   >
                     <Input
                       prefix={<BookOutlined />}
@@ -343,32 +329,8 @@ const navigate = useNavigate(); // ✅ Initialize navigate
                   </Form.Item>
 
                   <Form.Item
-                    name="myGang"
-                    label="My Gang"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please enter your gang's name!",
-                      },
-                    ]}
-                  >
-                    <Input prefix={<TeamOutlined />} placeholder="My Gang" />
-                  </Form.Item>
-
-                  <Form.Item
                     name="bestMemory"
                     label="Best Memory"
-                    rules={[
-                      {
-                        required: true,
-                        message: "Please share your best memory!",
-                      },
-                      {
-                        max: 200,
-                        message:
-                          "Please keep your memory under 200 characters.",
-                      },
-                    ]}
                   >
                     <TextArea
                       placeholder="Share your best memory"
@@ -404,21 +366,18 @@ const navigate = useNavigate(); // ✅ Initialize navigate
                   <Form.Item
                     name="lifeLesson"
                     label="One Life Lesson from MBA"
-                    rules={[{ required: true }]}
                   >
                     <TextArea placeholder="Life Lesson" />
                   </Form.Item>
                   <Form.Item
                     name="mbaLifeMiss"
                     label="What’s the one thing you’ll miss most about SOM?"
-                    rules={[{ required: true }]}
                   >
                     <Input placeholder="What You'll Miss" />
                   </Form.Item>
                   <Form.Item
                     name="mbaLifeThemeSong"
                     label="Your MBA Life Had a Theme Song"
-                    rules={[{ required: true }]}
                   >
                     <Input
                       prefix={<SoundOutlined />}
@@ -428,7 +387,6 @@ const navigate = useNavigate(); // ✅ Initialize navigate
                   <Form.Item
                     name="mbaLifeEmojis"
                     label="Your MBA Life in 3 Emojis"
-                    rules={[{ required: true }]}
                   >
                     <Input placeholder="Three Emojis" />
                   </Form.Item>
