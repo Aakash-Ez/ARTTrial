@@ -64,14 +64,16 @@ const MemoryMapPage: React.FC = () => {
           })
         : null;
       
-      const photoURL = await uploadPhotoToStorage(base64Photo, "memory", "memories");
+      var date = new Date().toISOString();
+      const photoURL = await uploadPhotoToStorage(base64Photo, date, "memories");
       
       const newMemory = {
         memory: memoryText,
         challenge,
         photo: photoURL,
-        date: new Date().toISOString(),
+        date: date,
       };
+      navigate("/challenge/" + challenge);
 
       await addDoc(collection(db, "memories"), newMemory);
       setMemories((prev) => [newMemory, ...prev]);

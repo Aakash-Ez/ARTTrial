@@ -9,6 +9,7 @@ import UserProfileDetails from "./UserProfileDetails";
 import PublicMessages from "../PublicMessages/PublicMessages";
 import UserProfileSummary from "./UserProfileSummary";
 import { getCurrentUserInfo } from "../../auth";
+import AvatarEditor from "./AvatarEditor";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -158,11 +159,15 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
             {/* User Information */}
             <Row gutter={[16, 16]} justify="center" style={{ marginBottom: 40 }}>
               <Col>
-                <Avatar
+              {userId === currentUserId ? (
+              <AvatarEditor userData={userData} />
+            ) : (
+              <Avatar
                   size={120}
                   src={userData.photoURL || "https://via.placeholder.com/120"}
                   style={{ boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)", objectFit: "cover" }}
                 />
+            )}
               </Col>
               <Col>
                 <Title level={2}>{userData.name || "Anonymous"}</Title>

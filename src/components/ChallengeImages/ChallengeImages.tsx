@@ -30,6 +30,7 @@ const ChallengeImages: React.FC = () => {
     };
 
     const fetchImages = async () => {
+      console.log(challengeName);
       if (!challengeName) {
         console.error("Challenge name is undefined");
         return;
@@ -38,6 +39,7 @@ const ChallengeImages: React.FC = () => {
         const memoriesCollection = collection(db, "memories");
         const q = query(memoriesCollection, where("challenge", "==", decodeURIComponent(challengeName)));
         const memoryDocs = await getDocs(q);
+        console.log(memoryDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
         setImages(memoryDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
       } catch (error) {
         console.error("Error fetching images:", error);
@@ -87,16 +89,18 @@ const ChallengeImages: React.FC = () => {
           grid={{ gutter: 16, column: 4 }}
           dataSource={images}
           renderItem={(item) => (
-            <List.Item>
-              <Card
-                hoverable
-                cover={<img 
-                  alt="memory" 
-                  src={item.photo} 
-                  style={{ width: "100%", height: "200px", objectFit: "cover", borderRadius: "8px" }}
-                  onClick={() => setSelectedImage(item)}
-                />}
-              >
+            <List.Item key={item.id}>
+  <Card
+    hoverable
+    cover={<img 
+      key={item.id} // Ensure React recognizes it as unique
+      alt="memory" 
+      src={item.photo} 
+      style={{ width: "100%", height: "250px", objectFit: "cover", borderRadius: "8px" }}
+      onClick={() => setSelectedImage(item)}
+    />}
+  >
+
                 <Text>{item.memory}</Text>
                 <div style={{ marginTop: "10px", display: "flex", gap: "5px" }}>
                   {emojis.map((emoji) => {

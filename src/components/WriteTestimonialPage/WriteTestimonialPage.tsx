@@ -7,6 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { useLocation } from "react-router-dom";
 import { getCurrentUserInfo } from "../../auth";
 import { createEventLog } from "../../utilities/CreateEventLog";
+import { useNavigate } from "react-router-dom";
 
 const { TextArea } = Input;
 const { Title, Text } = Typography;
@@ -17,6 +18,7 @@ const WriteTestimonialPage: React.FC = () => {
   const [receiverData, setReceiverData] = useState<any>(null);
   const [writerData, setWriterData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchReceiverData = async () => {
@@ -70,6 +72,7 @@ const WriteTestimonialPage: React.FC = () => {
       await createEventLog(writerData.uid, `You wrote a testimonial for ${receiverData?.name || "Unknown User"}`);
 
       message.success("Testimonial submitted successfully!");
+      navigate("/profile/" + receiverId);
     } catch (error) {
       console.error("Error submitting testimonial:", error);
       message.error("Failed to submit the testimonial. Please try again.");

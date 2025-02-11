@@ -4,6 +4,7 @@ import { collection, addDoc, getDocs, query, where, Timestamp } from "firebase/f
 import { db } from "../../firebase";
 import { getCurrentUserInfo } from "../../auth";
 import { getUserNameFromId } from "../../utilities/GetUserName";
+import { useNavigate } from "react-router-dom";
 const { Title, Text } = Typography;
 
 const { Content } = Layout;
@@ -16,6 +17,7 @@ const DisappearingTextPage: React.FC = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -39,6 +41,7 @@ const DisappearingTextPage: React.FC = () => {
 
           const messageDocs = await getDocs(q);
           setMessages(messageDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+          navigate("/profile/" + userInfo.uid);
         }
       } catch (error) {
         console.error("Error fetching user data or messages:", error);
