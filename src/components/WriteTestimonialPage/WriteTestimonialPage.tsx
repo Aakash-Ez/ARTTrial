@@ -109,7 +109,7 @@ const WriteTestimonialPage: React.FC = () => {
                 label={<Text style={{ color: "#2d3748" }}>Your Testimonial</Text>}
                 rules={[{ required: true, message: "Please write your testimonial!" }]}
               >
-                <TextArea rows={6} placeholder="Share your thoughts about this individual" maxLength={500} style={{ borderRadius: "8px" }} />
+                <TextArea rows={6} placeholder="Share your thoughts about this individual" style={{ borderRadius: "8px" }} />
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit" loading={loading} block style={{ borderRadius: "8px" }}>
