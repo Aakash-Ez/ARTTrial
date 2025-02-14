@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Typography, Card, List, Avatar, Spin, Progress } from "antd";
+import { Layout, Typography, Card, List, Avatar, Spin } from "antd";
 import { db } from "../../firebase";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 
@@ -27,7 +27,7 @@ const TopProfilesStats: React.FC = () => {
 
         const pollsCollection = collection(db, "polls");
         const pollsSnapshot = await getDocs(pollsCollection);
-        const polls = pollsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const polls = pollsSnapshot.docs.map(doc => ({ ...doc.data() }));
 
         const writerCounts: Record<string, number> = {};
         const receiverCounts: Record<string, number> = {};
@@ -69,7 +69,14 @@ const TopProfilesStats: React.FC = () => {
         setTopReceivers(await getTopProfiles(receiverCounts));
         setTopUploaders(await getTopProfiles(uploaderCounts));
         setTopReactors(await getTopProfiles(reactorCounts));
-        setPollResults(polls);
+
+        const sortedPolls = polls.map(poll => ({
+          ...poll,
+          options: Array.isArray(poll.options) 
+            ? [...poll.options].sort((a, b) => b.votes - a.votes).slice(0, 3)
+            : []
+        }));
+        setPollResults(sortedPolls);
       } catch (error) {
         console.error("Error fetching stats:", error);
       } finally {
@@ -97,21 +104,6 @@ const TopProfilesStats: React.FC = () => {
           <StatCard title="Top Uploaders" data={topUploaders} />
           <StatCard title="Top Reactors" data={topReactors} />
         </div>
-        <Title level={3} style={{ textAlign: "center", margin: "40px 0" }}>Current Top Polls</Title>
-        {pollResults.map((poll) => (
-          <Card key={poll.id} title={poll.question} style={{ marginBottom: "20px", textAlign: "center", padding: "20px" }}>
-            <List
-              dataSource={poll.options}
-              renderItem={(option: any) => (
-                <List.Item>
-                  <Avatar src={option.photoURL || "https://via.placeholder.com/64"} size={40} />
-                  <Text strong style={{ flex: 1, marginLeft: "10px" }}>{option.name}</Text>
-                  <Text>{option.votes} votes</Text>
-                </List.Item>
-              )}
-            />
-          </Card>
-        ))}
       </Content>
     </Layout>
   );

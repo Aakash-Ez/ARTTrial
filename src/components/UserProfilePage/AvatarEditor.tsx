@@ -32,7 +32,7 @@ const AvatarEditor: React.FC<{ userData: any }> = ({ userData }) => {
         return;
       }
       const storage = getStorage();
-      const storageRef = ref(storage, `avatars/${userInfo.email}`);
+      const storageRef = ref(storage, `profile_pictures/${userInfo.email}`);
       await uploadBytes(storageRef, file);
       const downloadURL = await getDownloadURL(storageRef);
       await updateDoc(doc(db, "users", userInfo.uid), {

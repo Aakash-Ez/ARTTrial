@@ -41,7 +41,6 @@ const DisappearingTextPage: React.FC = () => {
 
           const messageDocs = await getDocs(q);
           setMessages(messageDocs.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-          navigate("/profile/" + userInfo.uid);
         }
       } catch (error) {
         console.error("Error fetching user data or messages:", error);
@@ -72,6 +71,7 @@ const DisappearingTextPage: React.FC = () => {
       await addDoc(messagesCollection, newMessage);
 
       message.success("Message sent successfully!");
+      navigate("/profile/" + values.receiver);
     } catch (error) {
       console.error("Error sending message:", error);
       message.error("Failed to send message. Please try again.");
@@ -105,7 +105,7 @@ const DisappearingTextPage: React.FC = () => {
                   <Select placeholder="Select Duration">
                     <Option value={1}>1 Day</Option>
                     <Option value={2}>2 Days</Option>
-                    <Option value={null}>Indefinite</Option>
+                    <Option value={1000000}>Indefinite</Option>
                   </Select>
                 </Form.Item>
                 <Text>Make it Public:</Text> 

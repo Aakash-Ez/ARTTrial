@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Card, Button, List, Avatar, Progress, message, Input } from "antd";
-import { collection, getDocs, doc, updateDoc, onSnapshot } from "firebase/firestore";
+import { Layout, Card, Button, List, Avatar, message, Select, Input } from "antd";
+import { collection, getDocs, doc, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "../../firebase";
 import { getCurrentUserInfo } from "../../auth";
 
 const { Content } = Layout;
-const { Search } = Input;
+const { Option } = Select;
 
 const PollPage: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [polls, setPolls] = useState<any[]>([]);
   const [users, setUsers] = useState<any[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedCandidate, setSelectedCandidate] = useState<string>("");
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -25,19 +26,43 @@ const PollPage: React.FC = () => {
       }
     };
 
-    const fetchPolls = () => {
-      const pollsCollection = collection(db, "polls");
-      onSnapshot(pollsCollection, (snapshot) => {
-        setPolls(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-      });
+    const fetchPolls = async () => {
+      try {
+        const pollsCollection = collection(db, "polls");
+        const pollsSnapshot = await getDocs(pollsCollection);
+        const fetchedPolls = await Promise.all(
+          pollsSnapshot.docs.map(async (pollDoc) => {
+            const pollData = pollDoc.data();
+            const updatedOptions = await Promise.all(
+              pollData.options.map(async (option: any) => {
+                const userDoc = await getDoc(doc(db, "users", option.id));
+                return {
+                  ...option,
+                  name: userDoc.exists() ? userDoc.data().name : "Unknown",
+                  photoURL: userDoc.exists() ? userDoc.data().photoURL : "https://via.placeholder.com/64",
+                };
+              })
+            );
+            return { id: pollDoc.id, ...pollData, options: updatedOptions };
+          })
+        );
+        setPolls(fetchedPolls);
+      } catch (error) {
+        console.error("Error fetching polls:", error);
+      }
     };
 
     const fetchUsers = async () => {
-      const usersCollection = collection(db, "users");
-      const usersSnapshot = await getDocs(usersCollection);
-      const allUsers = usersSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setUsers(allUsers);
-      setFilteredUsers(allUsers.sort(() => 0.5 - Math.random()).slice(0, 3)); // Show 3 random users initially
+      try {
+        const usersCollection = collection(db, "users");
+        const usersSnapshot = await getDocs(usersCollection);
+        const sortedUsers = usersSnapshot.docs
+          .map((doc) => ({ id: doc.id, name: doc.data().name, ...doc.data() }))
+          .sort((a, b) => a.name.localeCompare(b.name));
+        setUsers(sortedUsers);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
     };
 
     fetchUserData();
@@ -50,12 +75,13 @@ const PollPage: React.FC = () => {
       message.error("You must be logged in to vote.");
       return;
     }
+    console.log(pollId, candidateId);
 
     try {
       const pollRef = doc(db, "polls", pollId);
       const poll = polls.find((p) => p.id === pollId);
       if (!poll) return;
-
+      console.log(poll);
       let updatedOptions = poll.options || [];
       const existingCandidate = updatedOptions.find((option: any) => option.id === candidateId);
 
@@ -70,57 +96,76 @@ const PollPage: React.FC = () => {
       } else {
         updatedOptions.push({ id: candidateId, votes: 1, voters: [userId] });
       }
-
+      console.log("updated:", updatedOptions);
       await updateDoc(pollRef, { options: updatedOptions });
+      refreshPage();
     } catch (error) {
       console.error("Error updating poll:", error);
       message.error("Failed to submit vote. Try again.");
     }
   };
-
-  const handleSearch = (value: string) => {
-    if (!value) {
-      setFilteredUsers(users.sort(() => 0.5 - Math.random()).slice(0, 3));
-    } else {
-      setFilteredUsers(users.filter((user) => user.name.toLowerCase().includes(value.toLowerCase())));
-    }
+  
+  const refreshPage = () => {
+    window.location.reload();
   };
-
+  
   return (
     <Layout style={{ padding: "20px", background: "#ffffff", minHeight: "100vh" }}>
       <Content>
         <h2 style={{ textAlign: "center", color: "#333" }}>Live Polls</h2>
-        <Search placeholder="Search Candidates" onSearch={handleSearch} style={{ marginBottom: 20 }} />
         <List
           dataSource={polls}
-          renderItem={(poll) => (
-            <Card style={{ marginBottom: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
-              <h3 style={{ color: "#222" }}>{poll.question}</h3>
-              <p style={{ fontSize: "12px", color: "#888" }}>
-                Deadline: {new Date(poll.deadline.toDate()).toLocaleString()}
-              </p>
-              {filteredUsers.map((user) => {
-                const pollOption = poll.options?.find((opt: any) => opt.id === user.id) || { votes: 0, voters: [] };
-                const totalVotes = poll.options?.reduce((sum: number, o: any) => sum + o.votes, 0) || 1;
-                const votePercentage = ((pollOption.votes / totalVotes) * 100).toFixed(1);
-                const hasVoted = pollOption.voters.includes(userId);
-                return (
-                  <div key={user.id} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
-                    <Avatar src={user.photoURL} size={50} style={{ marginRight: "10px" }} />
-                    <span style={{ flex: 1 }}>{user.name}</span>
-                    <Progress percent={parseFloat(votePercentage)} style={{ flex: 2 }} />
-                    <Button
-                      type={hasVoted ? "primary" : "default"}
-                      onClick={() => handleVote(poll.id, user.id)}
-                      style={{ marginLeft: "10px" }}
-                    >
-                      {hasVoted ? "Unvote" : "Vote"}
-                    </Button>
+          renderItem={(poll) => {
+            const sortedOptions = [...poll.options].sort((a, b) => b.votes - a.votes).slice(0, 3);
+            const userVotedFor = poll.options.find((opt: any) => opt.voters.includes(userId));
+            const filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()));
+            return (
+              <Card style={{ marginBottom: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}>
+                <h3 style={{ color: "#222" }}>{poll.question}</h3>
+                <h4>Top 3 Candidates:</h4>
+                {sortedOptions.map((option: any) => (
+                  <div key={option.id} style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                    <Avatar src={option.photoURL || "https://via.placeholder.com/64"} size={50} style={{ marginRight: "10px" }} />
+                    <span style={{ flex: 1 }}>{option.name}</span>
+                    <span style={{ fontWeight: "bold" }}>{option.votes} votes</span>
                   </div>
-                );
-              })}
-            </Card>
-          )}
+                ))}
+                <h4>Your Vote:</h4>
+                {userVotedFor ? (
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: "10px" }}>
+                    <Avatar src={userVotedFor.photoURL || "https://via.placeholder.com/64"} size={50} style={{ marginRight: "10px" }} />
+                    <span style={{ flex: 1 }}>{userVotedFor.name}</span>
+                  </div>
+                ) : (
+                  <>
+                          <Input 
+          placeholder="Search Candidates" 
+          value={searchTerm} 
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ marginBottom: "10px", width: "100%" }}
+        />
+                    <Select 
+                      placeholder="Vote for a candidate"
+                      onChange={(value) => setSelectedCandidate(value)}
+                      style={{ width: "100%" }}
+                    >
+                      {filteredUsers.map((option: any) => (
+                        <Option key={option.id} value={option.id}>
+                          <div style={{ display: "flex", alignItems: "center" }}>
+                            <Avatar src={option.photoURL || "https://via.placeholder.com/64"} size={30} style={{ marginRight: "10px" }} />
+                            <span>{option.name}</span>
+                          </div>
+                        </Option>
+                      ))}
+                    </Select>
+                    <Button type="primary" onClick={() => handleVote(poll.id, selectedCandidate)} style={{ marginTop: "10px", width: "100%", background: "#1890ff", borderColor: "#1890ff", fontWeight: "bold" }}>
+                      🎉 Submit Vote!
+                    </Button>
+                  </>
+                )}
+              </Card>
+            );
+          }}
         />
       </Content>
     </Layout>
