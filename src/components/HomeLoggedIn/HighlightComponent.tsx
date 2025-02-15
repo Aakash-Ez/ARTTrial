@@ -135,7 +135,9 @@ const HighlightComponent: React.FC<{ userId: string }> = ({ userId }) => {
         <Form.Item name="tags" label="Tag Users">
           <Select
             mode="multiple"
+            showSearch
             placeholder="Select users to tag"
+            filterOption={(input, option) => option?.label.toLowerCase().includes(input.toLowerCase())}
             options={userOptions}
             style={{ width: "100%" }}
           />
@@ -181,3 +183,4 @@ const HighlightComponent: React.FC<{ userId: string }> = ({ userId }) => {
 };
 
 export default HighlightComponent;
+
