@@ -75,6 +75,10 @@ const PollPage: React.FC = () => {
       message.error("You must be logged in to vote.");
       return;
     }
+    if (!candidateId) {
+      message.error("You must select a candidate to vote.");
+      return;
+    }
     console.log(pollId, candidateId);
 
     try {
