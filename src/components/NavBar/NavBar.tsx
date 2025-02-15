@@ -143,41 +143,41 @@ const NavBar: React.FC = () => {
         </div>
         <Drawer title="Menu" placement="right" closable onClose={toggleDrawer} visible={isDrawerVisible}>
         <Menu theme="light" mode="vertical" style={{ flex: 1, justifyContent: "center", fontSize: "16px", borderBottom: "none" }}>
-            <Menu.Item key="home" icon={<HomeOutlined />}>
+            <Menu.Item key="home" icon={<HomeOutlined />} onClick={() => setIsDrawerVisible(false)}>
               <Link to="/">Home</Link>
             </Menu.Item>
-            <Menu.Item key="stats" icon={<RiseOutlined />}>
+            <Menu.Item key="stats" icon={<RiseOutlined />} onClick={() => setIsDrawerVisible(false)}>
               <Link to="/stats">Leaderboard</Link>
             </Menu.Item>
             {user ? (
               <>
-                <Menu.Item key="profile" icon={<UserOutlined />}>
+                <Menu.Item key="profile" icon={<UserOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Link to={`/profile/${user.uid}`}>Profile</Link>
                 </Menu.Item>
-                <Menu.Item key="Highlights" icon={<PictureOutlined />}>
+                <Menu.Item key="Highlights" icon={<PictureOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Link to="/highlights">Highlights</Link>
                 </Menu.Item>
                 <Menu.Item key="wall" icon={<TeamOutlined />}>
                   <Link to="/wall">Wall</Link>
                 </Menu.Item>
-                <Menu.Item key="memory-map" icon={<EnvironmentOutlined />}>
+                <Menu.Item key="memory-map" icon={<EnvironmentOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Link to="/memory-map">Memory Map</Link>
                 </Menu.Item>
-                <Menu.Item key="disappearing-text" icon={<FontSizeOutlined />}>
+                <Menu.Item key="disappearing-text" icon={<FontSizeOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Link to="/disappearing-text">Disappearing Text</Link>
                 </Menu.Item>
-                <Menu.Item key="events" icon={<CalendarOutlined />}>
+                <Menu.Item key="events" icon={<CalendarOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Link to="/events">Events</Link>
                 </Menu.Item>
-                <Menu.Item key="testimonials" icon={<CommentOutlined />}>
+                <Menu.Item key="testimonials" icon={<CommentOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Badge count={testimonialCount} offset={[10, 0]}>
                     <Link to="/testimonials">Testimonials</Link>
                   </Badge>
                 </Menu.Item>
-                <Menu.Item key="polls" icon={<BarChartOutlined />}>
+                <Menu.Item key="polls" icon={<BarChartOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Link to="/polls">Polls</Link>
                 </Menu.Item>
-                <Menu.Item key="forum" icon={<AlignLeftOutlined />}>
+                <Menu.Item key="forum" icon={<AlignLeftOutlined />} onClick={() => setIsDrawerVisible(false)}>
                   <Link to="/forum">Forum</Link>
                 </Menu.Item>
                 <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
@@ -185,7 +185,7 @@ const NavBar: React.FC = () => {
                 </Menu.Item>
               </>
             ) : (
-              <Menu.Item key="login" icon={<UserOutlined />}>
+              <Menu.Item key="login" icon={<UserOutlined />}  onClick={() => setIsDrawerVisible(false)}>
                 <Link to="/signup">Log In/Signup</Link>
               </Menu.Item>
             )}
