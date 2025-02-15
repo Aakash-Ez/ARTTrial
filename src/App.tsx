@@ -20,26 +20,9 @@ import TopProfilesStats from "./components/TopProfilesStats/TopProfilesStats";
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <NavBar />
-      <Routes>
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/features" element={<FeaturesPage />} />
-        <Route path="/forum" element={<ForumPage />} />
-        <Route path="/" element={<HomePage />} />
-        <Route path="/polls" element={<PollPage />} />
-        <Route path="/memory-map" element={<MemoryMapPage />} />
-        <Route path="/testimonials" element={<TestimonialsPage />} />
-        <Route path="/events" element={<EventsPage />} />
-        <Route path="/write-testimonial" element={<WriteTestimonialWrapper />} />
-        <Route path="/profile/:userId" element={<UserProfilePageWrapper />} />
-        <Route path="/disappearing-text" element={<DisappearingTextPage />} />
-        <Route path="/challenge/:challengeName" element={<ChallengeImages />} />
-        <Route path="/wall" element={<TestimonialsOverview />} />
-        <Route path="/highlights" element={<HighlightsPage />} />
-        <Route path="/stats" element={<TopProfilesStats  />} />
-      </Routes>
-    </Router>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+    <h1>Removed</h1>
+  </div>
   );
 };
 
