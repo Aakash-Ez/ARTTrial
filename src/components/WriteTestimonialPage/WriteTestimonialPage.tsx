@@ -8,7 +8,12 @@ import { useLocation } from "react-router-dom";
 import { getCurrentUserInfo } from "../../auth";
 import { createEventLog } from "../../utilities/CreateEventLog";
 import { useNavigate } from "react-router-dom";
+import OpenAI from 'openai';
 
+const client = new OpenAI({
+  apiKey: process.env['REACT_APP_OPENAI_API_KEY'],
+  dangerouslyAllowBrowser: true
+});
 const { TextArea } = Input;
 const { Title, Text } = Typography;
 
@@ -18,6 +23,9 @@ const WriteTestimonialPage: React.FC = () => {
   const [receiverData, setReceiverData] = useState<any>(null);
   const [writerData, setWriterData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [optimizing, setOptimizing] = useState(false);
+  const [testimonialText, setTestimonialText] = useState("");
+  const [form] = Form.useForm();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -81,15 +89,41 @@ const WriteTestimonialPage: React.FC = () => {
     }
   };
 
-  if (!receiverId) {
-    return <div>No receiver specified.</div>;
-  }
+  const handleOptimize = async () => {
+    if (!testimonialText) {
+      message.error("Please write a testimonial first.");
+      return;
+    }
+    setOptimizing(true);
+    try {
+      let response = "";
+      const command = "Improve the following testimonial without changing its core meaning. Just the testimonial. Keep it fun. Note this is for Yearbook Testimonial amongst batchmates:\n\n" + testimonialText;
+      const stream = await client.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: command }],
+        stream: true,
+      });
+      for await (const chunk of stream) {
+        if(chunk.choices[0]?.delta?.content !== undefined) {
+          response += chunk.choices[0]?.delta?.content;
+        }
+      }
+      setTestimonialText(response);
+      form.setFieldsValue({ testimonial: response });
+      message.success("Testimonial optimized successfully!");
+    } catch (error) {
+      console.error("Error optimizing testimonial:", error);
+      message.error("Failed to optimize the testimonial. Please try again.");
+    } finally {
+      setOptimizing(false);
+    }
+  };
 
   return (
     <div style={{ padding: "20px", background: "#f7fafc" }}>
       <Row gutter={[16, 16]} justify="center">
         <Col xs={24} sm={24} md={10} lg={8} xl={6}>
-          <Card bordered={false} style={{ background: "#fff", padding: "20px", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)" }}>
+          <Card bordered={false}>
             {receiverData ? (
               <ProfileShowcase userId={receiverId} editable={false} />
             ) : (
@@ -98,22 +132,25 @@ const WriteTestimonialPage: React.FC = () => {
           </Card>
         </Col>
         <Col xs={24} sm={24} md={14} lg={12} xl={10}>
-          <Card bordered={false} style={{ textAlign: "center", background: "#edf2f7", padding: "20px" }}>
-            <Title level={3} style={{ color: "#2d3748", marginBottom: "20px" }}>Write a Testimonial</Title>
-            <Text style={{ color: "#4a5568", marginBottom: "10px", display: "block" }}>
-              Share your thoughts and make it memorable for {receiverData?.name || "this person"}.
-            </Text>
-            <Form layout="vertical" onFinish={handleSubmit} style={{ marginTop: "20px" }}>
+          <Card bordered={false}>
+            <Title level={3}>Write a Testimonial</Title>
+            <Form layout="vertical" form={form} onFinish={handleSubmit}>
               <Form.Item
                 name="testimonial"
-                label={<Text style={{ color: "#2d3748" }}>Your Testimonial</Text>}
+                label={<Text>Your Testimonial</Text>}
                 rules={[{ required: true, message: "Please write your testimonial!" }]}
               >
-                <TextArea rows={6} placeholder="Share your thoughts about this individual" maxLength={1000} style={{ borderRadius: "8px" }} />
-                <TextArea rows={6} placeholder="Share your thoughts about this individual" style={{ borderRadius: "8px" }} />
+                <TextArea
+                  rows={6}
+                  value={testimonialText}
+                  onChange={(e) => setTestimonialText(e.target.value)}
+                />
               </Form.Item>
+              <Button onClick={handleOptimize} loading={optimizing} block>
+                AI Optimize
+              </Button>
               <Form.Item>
-                <Button type="primary" htmlType="submit" loading={loading} block style={{ borderRadius: "8px" }}>
+                <Button type="primary" htmlType="submit" loading={loading} block>
                   Submit Testimonial
                 </Button>
               </Form.Item>
@@ -124,3 +161,5 @@ const WriteTestimonialPage: React.FC = () => {
     </div>
   );
 };
+
+export default WriteTestimonialPage;
