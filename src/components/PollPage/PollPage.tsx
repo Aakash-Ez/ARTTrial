@@ -33,16 +33,32 @@ const PollPage: React.FC = () => {
         const fetchedPolls = await Promise.all(
           pollsSnapshot.docs.map(async (pollDoc) => {
             const pollData = pollDoc.data();
-            const updatedOptions = await Promise.all(
+            let updatedOptions = pollData.options ? await Promise.all(
               pollData.options.map(async (option: any) => {
-                const userDoc = await getDoc(doc(db, "users", option.id));
-                return {
-                  ...option,
-                  name: userDoc.exists() ? userDoc.data().name : "Unknown",
-                  photoURL: userDoc.exists() ? userDoc.data().photoURL : "https://via.placeholder.com/64",
-                };
+              const userDoc = await getDoc(doc(db, "users", option.id));
+              return {
+                ...option,
+                name: userDoc.exists() ? userDoc.data().name : "Unknown",
+                photoURL: userDoc.exists() ? userDoc.data().photoURL : "https://via.placeholder.com/64",
+              };
               })
-            );
+            ) : [];
+
+            if (updatedOptions.length < 3) {
+              const randomUsers = users
+              .filter(user => !updatedOptions.some(option => option.id === user.id))
+              .sort(() => 0.5 - Math.random())
+              .slice(0, 3 - updatedOptions.length)
+              .map(user => ({
+                id: user.id,
+                name: user.name,
+                photoURL: user.photoURL || "https://via.placeholder.com/64",
+                votes: 0,
+                voters: []
+              }));
+              console.log(users);
+              updatedOptions = [...updatedOptions, ...randomUsers];
+            }
             return { id: pollDoc.id, ...pollData, options: updatedOptions };
           })
         );

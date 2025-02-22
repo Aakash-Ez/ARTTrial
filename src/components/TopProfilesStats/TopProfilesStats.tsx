@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Layout, Typography, Card, List, Avatar, Spin } from "antd";
 import { db } from "../../firebase";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import {getUserNameFromId } from "../../utilities/GetUserName";
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -13,6 +14,7 @@ const TopProfilesStats: React.FC = () => {
   const [topUploaders, setTopUploaders] = useState<any[]>([]);
   const [topReactors, setTopReactors] = useState<any[]>([]);
   const [pollResults, setPollResults] = useState<any[]>([]);
+  const [testimonials, setTestimonialText] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -20,6 +22,11 @@ const TopProfilesStats: React.FC = () => {
         const testimonialsCollection = collection(db, "testimonials");
         const testimonialsSnapshot = await getDocs(testimonialsCollection);
         const testimonials = testimonialsSnapshot.docs.map(doc => doc.data());
+
+        await Promise.all(testimonials.map(async (t) => {
+          t['writerName'] = await getUserNameFromId(t.writer); // Replace user ID with name 
+          t['receiverName'] = await getUserNameFromId(t.receiver); // Replace user ID with name
+        }));
 
         const highlightsCollection = collection(db, "highlights");
         const highlightsSnapshot = await getDocs(highlightsCollection);
@@ -69,7 +76,7 @@ const TopProfilesStats: React.FC = () => {
         setTopReceivers(await getTopProfiles(receiverCounts));
         setTopUploaders(await getTopProfiles(uploaderCounts));
         setTopReactors(await getTopProfiles(reactorCounts));
-
+        setTestimonialText(testimonials);
         const sortedPolls = polls.map(poll => ({
           ...poll,
           options: Array.isArray(poll.options) 
@@ -104,6 +111,19 @@ const TopProfilesStats: React.FC = () => {
           <StatCard title="Top Uploaders" data={topUploaders} />
           <StatCard title="Top Reactors" data={topReactors} />
         </div>
+        <Title level={4} style={{ textAlign: "center", margin: "40px 0" }}>All Testimonials</Title>
+        <List
+          itemLayout="horizontal"
+          dataSource={testimonials}
+          renderItem={(testimonial) => (
+            <List.Item>
+              <List.Item.Meta
+                title={<Text strong>{testimonial.receiverName}</Text>}
+                description={`From: ${testimonial.writerName} - "${testimonial.testimonial}"`}
+              />
+            </List.Item>
+          )}
+        />
       </Content>
     </Layout>
   );
