@@ -135,23 +135,24 @@ const WriteTestimonialPage: React.FC = () => {
         <Col xs={24} sm={24} md={14} lg={12} xl={10}>
           <Card bordered={false} style={{ textAlign: "center", background: "#edf2f7", padding: "20px" }}>
             <Title level={3} style={{ color: "#2d3748", marginBottom: "20px" }}>Write a Testimonial</Title>
-            <TextArea
+            <Form.Item
+                name="testimonial"
+                label={<Text style={{ color: "#2d3748" }}>Your Testimonial</Text>}
+                rules={[{ required: true, message: "Please write your testimonial!" }]}
+              >
+                <TextArea
               rows={6}
               value={testimonialText}
               onChange={(e) => setTestimonialText(e.target.value)}
               placeholder="Share your thoughts about this individual"
               style={{ borderRadius: "8px" }}
             />
+              </Form.Item>
             <Button onClick={handleOptimize} loading={optimizing} block style={{ borderRadius: "8px", marginTop: "10px"}}>
               AI Optimize
             </Button>
             <Form layout="vertical" onFinish={handleSubmit} style={{ marginTop: "20px" }}>
-              <Form.Item
-                name="testimonial"
-                label={<Text style={{ color: "#2d3748" }}>Your Testimonial</Text>}
-                rules={[{ required: true, message: "Please write your testimonial!" }]}
-              >
-              </Form.Item>
+              
               <Form.Item>
                 <Button type="primary" htmlType="submit" loading={loading} block style={{ borderRadius: "8px" }}>
                   Submit Testimonial
