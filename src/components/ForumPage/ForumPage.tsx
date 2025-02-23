@@ -81,9 +81,9 @@ const ForumPage: React.FC = () => {
           <List
             dataSource={messages}
             renderItem={(item) => (
-              <List.Item style={{ display: "flex", alignItems: "center" }}>
+              <List.Item style={{ display: "flex", alignItems: "center", wordWrap: "break-word", whiteSpace: "pre-wrap" }}>
                 <Avatar src={item.userPhoto} size={40} style={{ marginRight: "10px" }} />
-                <Card style={{ width: "100%", background: "#f0f2f5", borderRadius: "10px" }}>
+                <Card style={{ width: "100%", background: "#f0f2f5", borderRadius: "10px", wordWrap: "break-word", whiteSpace: "pre-wrap" }}>
                   <p><strong>{item.userName}</strong></p>
                   <p>{item.message}</p>
                   <p style={{ fontSize: "12px", color: "#888" }}>
