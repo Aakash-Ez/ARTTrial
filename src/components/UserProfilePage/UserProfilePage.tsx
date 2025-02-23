@@ -10,6 +10,7 @@ import PublicMessages from "../PublicMessages/PublicMessages";
 import UserProfileSummary from "./UserProfileSummary";
 import { getCurrentUserInfo } from "../../auth";
 import AvatarEditor from "./AvatarEditor";
+import ProfileCompletionCheck from "../ProfileCompletionCheck/ProfileCompletionCheck";
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -174,8 +175,16 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
                 <Text type="secondary">{userData.email || "No email provided"}</Text>
               </Col>
             </Row>
-
-            {/* Highlights Section */}
+            
+            {/* Profile Completion Check */}
+            
+            
+            {userId === currentUserId && (
+              <>
+                <ProfileCompletionCheck />
+              </>
+            )}
+      
             <Divider>Highlights</Divider>
             {highlights.length > 0 ? (
               <Carousel autoplay>

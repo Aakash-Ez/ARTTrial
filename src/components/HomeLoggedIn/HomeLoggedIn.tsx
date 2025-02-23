@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
 import { collection, getDocs, query, orderBy, limit, doc, getDoc } from "firebase/firestore";
 import ForumPage from "../ForumPage/ForumPage";
+import ProfileCompletionCheck from "../ProfileCompletionCheck/ProfileCompletionCheck";
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -80,6 +81,7 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
   return (
     <Layout style={{ minHeight: "100vh", background: "#eaf0f6" }}>
       <Content style={{ padding: "20px" }}>
+        <Title level={2} style={{ color: "#333" }}>Welcome, {userData.name || "Friend"}</Title>
         <div style={{ marginBottom: 20 }}>
           <Title level={3} style={{ color: "#333" }}>Profiles</Title>
           <Search
