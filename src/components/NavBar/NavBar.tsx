@@ -93,9 +93,6 @@ const NavBar: React.FC = () => {
             <Menu.Item key="home" icon={<HomeOutlined />}>
               <Link to="/">Home</Link>
             </Menu.Item>
-            <Menu.Item key="stats" icon={<RiseOutlined />}>
-              <Link to="/stats">Leaderboard</Link>
-            </Menu.Item>
             {user ? (
               <>
                 <Menu.Item key="profile" icon={<UserOutlined />}>
@@ -145,9 +142,6 @@ const NavBar: React.FC = () => {
         <Menu theme="light" mode="vertical" style={{ flex: 1, justifyContent: "center", fontSize: "16px", borderBottom: "none" }}>
             <Menu.Item key="home" icon={<HomeOutlined />} onClick={() => setIsDrawerVisible(false)}>
               <Link to="/">Home</Link>
-            </Menu.Item>
-            <Menu.Item key="stats" icon={<RiseOutlined />} onClick={() => setIsDrawerVisible(false)}>
-              <Link to="/stats">Leaderboard</Link>
             </Menu.Item>
             {user ? (
               <>

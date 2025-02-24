@@ -50,11 +50,14 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
         console.error("Error fetching profiles:", error);
       }
     };
-
-    const fetchRandomTestimonials = async () => {
+    const fetchLatestTestimonials = async () => {
       try {
         const testimonialsCollection = collection(db, "testimonials");
-        const testimonialQuery = query(testimonialsCollection, orderBy("timestamp", "desc"), limit(50));
+        const testimonialQuery = query(
+          testimonialsCollection,
+          orderBy("timestamp", "desc"),
+          limit(3) // Fetch only the latest 3 testimonials
+        );
         const testimonialDocs = await getDocs(testimonialQuery);
         const testimonialsWithNames = await Promise.all(
           testimonialDocs.docs.map(async (doc) => {
@@ -66,17 +69,17 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
             };
           })
         );
-        setRandomTestimonials(testimonialsWithNames.sort(() => 0.5 - Math.random()).slice(0, 3)); // Select 4 random testimonials
+        setRandomTestimonials(testimonialsWithNames);
       } catch (error) {
         console.error("Error fetching testimonials:", error);
       }
     };
+  
 
     useEffect(() => {
-      
-    fetchProfiles();
-    fetchRandomTestimonials();
-  }, []);
+      fetchProfiles();
+      fetchLatestTestimonials();
+    }, []);
 
   return (
     <Layout style={{ minHeight: "100vh", background: "#eaf0f6" }}>
@@ -159,21 +162,6 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
           ))}
         </div>
       </Content>
-
-      {!isMobile && (
-        <Sider
-          width={450}
-          style={{
-            background: "#ffffff",
-            padding: "20px",
-            boxShadow: "-2px 0 8px rgba(0, 0, 0, 0.1)",
-          }}
-          breakpoint="md"
-          collapsedWidth="0"
-        >
-          <ForumPage />
-        </Sider>
-      )}
     </Layout>
   );
 };
