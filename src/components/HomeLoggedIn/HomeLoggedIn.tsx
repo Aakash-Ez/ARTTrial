@@ -6,7 +6,7 @@ import { db } from "../../firebase";
 import { collection, getDocs, query, orderBy, limit, doc, getDoc } from "firebase/firestore";
 import ForumPage from "../ForumPage/ForumPage";
 import ProfileCompletionCheck from "../ProfileCompletionCheck/ProfileCompletionCheck";
-
+import usersBatch from "./users_with_batch.json";
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Content, Sider } = Layout;
@@ -37,12 +37,7 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
 
   const fetchProfiles = async (searchValue: string = "") => {
       try {
-        const profilesCollection = collection(db, "users");
-        const profileDocs = await getDocs(profilesCollection);
-        let allProfiles = profileDocs.docs.map((doc) => doc.data());
-        for (let i = 0; i < allProfiles.length; i++) {
-          allProfiles[i] = { id: profileDocs.docs[i].id, ...allProfiles[i] };
-        }
+        let allProfiles = usersBatch;
         console.log("All profiles:", allProfiles);
         console.log("Search Term:", searchValue);
         setProfiles(allProfiles.filter(profile => (profile.name?.toLowerCase().includes(searchValue.toLowerCase()) || profile.email?.toLowerCase().includes(searchValue.toLowerCase()))).sort(() => 0.5 - Math.random()).slice(0, 4)); // Select 4 random profiles
