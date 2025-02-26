@@ -59,20 +59,52 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
           console.error("User data not found");
         }
 
-        // Fetch highlights
-        const highlightsSnapshot = await getDocs(
-          query(collection(db, "highlights"), where("tags", "array-contains", userId))
-        );
-        const highlightsData = await Promise.all(
-          highlightsSnapshot.docs.map(async (doc) => {
-            const data = doc.data();
-            const userNames = await Promise.all(
-              data.tags.map(async (tagId: string) => await getUserNameFromId(tagId))
+        const fetchAndCacheImage = async (imageUrl: string) => {
+          const cachedImage = localStorage.getItem(imageUrl);
+          if (cachedImage) {
+            console.log("Returning Cached Image...");
+            return cachedImage; // Return cached image if available
+          }
+        
+          try {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const objectURL = URL.createObjectURL(blob);
+            console.log("Returning Non Cached Image...");
+            localStorage.setItem(imageUrl, objectURL); // Cache the image
+            return objectURL;
+          } catch (error) {
+            console.error("Error fetching image:", error);
+            return imageUrl; // Fallback to original URL
+          }
+        };
+        
+        const fetchHighlights = async () => {
+          try {
+            const highlightsSnapshot = await getDocs(
+              query(collection(db, "highlights"), where("tags", "array-contains", userId))
             );
-            return { id: doc.id, ...data, tags: userNames };
-          })
-        );
-        setHighlights(highlightsData);
+        
+            const highlightsData = await Promise.all(
+              highlightsSnapshot.docs.map(async (doc) => {
+                const data = doc.data();
+        
+                // Cache and replace image URL
+                const cachedImageUrl = await fetchAndCacheImage(data.image);
+                const userNames = await Promise.all(
+                  data.tags.map(async (tagId: string) => await getUserNameFromId(tagId))
+                );
+                return { id: doc.id, ...data, tags: userNames , imageUrl: cachedImageUrl };
+              })
+            );
+        
+            setHighlights(highlightsData);
+          } catch (error) {
+            console.error("Error fetching highlights:", error);
+          }
+        };
+        
+        fetchHighlights();
 
         // Fetch testimonials
         const testimonialsCollection = collection(db, "testimonials");
@@ -176,39 +208,37 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
               </Col>
             </Row>
             
-            {/* Profile Completion Check */}
-            
-            
-            {userId === currentUserId && (
-              <>
-                <ProfileCompletionCheck />
-              </>
-            )}
-      
-            <Divider>Highlights</Divider>
-            {highlights.length > 0 ? (
-              <Carousel autoplay>
-                {highlights.map((highlight) => (
-                  <Card
-                    key={highlight.id}
-                    style={{
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                      textAlign: "center",
-                      display: "inline-block",
-                      borderRadius: "12px",
-                      overflow: "hidden",
-                    }}
-                    cover={<img alt="highlight" src={highlight.image} style={{ maxHeight: 400, objectFit: "contain" }} />}
-                  >
-                    <Text>{highlight.caption}</Text>
-                    <Divider />
-                    <Text type="secondary">Tags: {highlight.tags?.join(", ") || "None"}</Text>
-                  </Card>
-                ))}
-              </Carousel>
-            ) : (
-              <Text>No highlights available.</Text>
-            )}
+
+<Divider>Highlights</Divider>
+{highlights.length > 0 ? (
+  <Row gutter={[16, 16]} justify="center">
+    {highlights.map((highlight) => (
+      <Col key={highlight.id} xs={24} sm={12} md={8} lg={6} xl={4}>
+        <Card
+          style={{
+            boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+            textAlign: "center",
+            borderRadius: "12px",
+            overflow: "hidden",
+          }}
+          cover={
+            <img
+              alt="highlight"
+              src={highlight.imageUrl}
+              style={{ maxHeight: 250, objectFit: "cover", width: "100%" }}
+            />
+          }
+        >
+          <Text strong>{highlight.caption}</Text>
+          <Divider />
+          <Text type="secondary">Tags: {highlight.tags?.join(", ") || "None"}</Text>
+        </Card>
+      </Col>
+    ))}
+  </Row>
+) : (
+  <Text>No highlights available.</Text>
+)}
 
             {/* Profile Highlights */}
             <Divider>Profile Highlights</Divider>
