@@ -10,7 +10,67 @@ import PublicMessages from "../PublicMessages/PublicMessages";
 import UserProfileSummary from "./UserProfileSummary";
 import { getCurrentUserInfo } from "../../auth";
 import AvatarEditor from "./AvatarEditor";
-import ProfileCompletionCheck from "../ProfileCompletionCheck/ProfileCompletionCheck";
+
+import { openDB } from "idb"; // Import IndexedDB wrapper
+
+// Open or create IndexedDB
+const getDB = async () => {
+  return openDB("image-cache", 1, {
+    upgrade(db) {
+      if (!db.objectStoreNames.contains("images")) {
+        db.createObjectStore("images");
+      }
+    },
+  });
+};
+
+// Store image in IndexedDB
+const storeImage = async (imageUrl: string, base64: string) => {
+  const db = await getDB();
+  const tx = db.transaction("images", "readwrite");
+  tx.objectStore("images").put(base64, imageUrl);
+  await tx.done;
+};
+
+// Retrieve image from IndexedDB
+const getCachedImage = async (imageUrl: string) => {
+  const db = await getDB();
+  return db.transaction("images").objectStore("images").get(imageUrl);
+};
+
+// Fetch, Convert & Cache Image in IndexedDB
+const fetchAndCacheImage = async (imageUrl: string) => {
+  const cachedImage = await getCachedImage(imageUrl);
+  if (cachedImage) {
+    console.log("Returning Cached Image from IndexedDB...");
+    return cachedImage; // Return cached image from IndexedDB
+  }
+
+  try {
+    console.log("Fetching new image from Firebase Storage...");
+
+    const response = await fetch(imageUrl);
+    if (!response.ok) throw new Error("Failed to fetch image");
+
+    const blob = await response.blob();
+    
+    // Convert Blob to Base64
+    const reader = new FileReader();
+    return new Promise<string>((resolve, reject) => {
+      reader.onloadend = async () => {
+        const base64data = reader.result as string;
+        await storeImage(imageUrl, base64data); // Store in IndexedDB
+        resolve(base64data);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob); // Convert Blob to Base64
+    });
+  } catch (error) {
+    console.error("Error fetching image:", error);
+    return imageUrl; // Fallback to original URL
+  }
+};
+
 
 const { Title, Text } = Typography;
 const { Content } = Layout;
@@ -49,6 +109,8 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
   useEffect(() => {
     console.log("Fetching profile for userId:", userId);
 
+    
+
     const fetchUserProfile = async () => {
       try {
         // Fetch user data using the document ID directly
@@ -58,26 +120,6 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
         } else {
           console.error("User data not found");
         }
-
-        const fetchAndCacheImage = async (imageUrl: string) => {
-          const cachedImage = localStorage.getItem(imageUrl);
-          if (cachedImage) {
-            console.log("Returning Cached Image...");
-            return cachedImage; // Return cached image if available
-          }
-        
-          try {
-            const response = await fetch(imageUrl);
-            const blob = await response.blob();
-            const objectURL = URL.createObjectURL(blob);
-            console.log("Returning Non Cached Image...");
-            localStorage.setItem(imageUrl, objectURL); // Cache the image
-            return objectURL;
-          } catch (error) {
-            console.error("Error fetching image:", error);
-            return imageUrl; // Fallback to original URL
-          }
-        };
         
         const fetchHighlights = async () => {
           try {
