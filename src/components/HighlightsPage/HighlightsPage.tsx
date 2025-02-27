@@ -25,7 +25,6 @@ const HighlightsPage: React.FC = () => {
     <Layout style={{ minHeight: "100vh", padding: "20px", background: "#f7f9fc" }}>
       <Content>
         <Title level={3} style={{ textAlign: "center", marginBottom: "20px" }}>Your Highlights</Title>
-        <HighlightComponent userId={userId} />
       </Content>
     </Layout>
   );
