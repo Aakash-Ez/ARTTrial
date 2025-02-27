@@ -80,7 +80,7 @@ const WriteTestimonialPage: React.FC = () => {
       await createEventLog(writerData.uid, `You wrote a testimonial for ${receiverData?.name || "Unknown User"}`);
 
       message.success("Testimonial submitted successfully!");
-      navigate("/profile/" + receiverId);
+      navigate("/");
     } catch (error) {
       console.error("Error submitting testimonial:", error);
       message.error("Failed to submit the testimonial. Please try again.");
