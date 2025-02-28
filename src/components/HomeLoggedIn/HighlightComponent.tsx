@@ -5,6 +5,7 @@ import { db } from "../../firebase";
 import { getUserNameFromId, uploadPhotoToStorage } from "../../auth";
 import { collection, getDocs, addDoc, query, where, getDoc, doc, deleteDoc } from "firebase/firestore";
 import { createEventLog } from "../../utilities/CreateEventLog";
+import { useNavigate } from "react-router-dom";
 
 const { Text } = Typography;
 const { Option } = Select;
@@ -13,32 +14,33 @@ const HighlightComponent: React.FC<{ userId: string }> = ({ userId }) => {
   const [highlights, setHighlights] = useState<any[]>([]);
   const [uploading, setUploading] = useState(false);
   const [userOptions, setUserOptions] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchHighlights = async () => {
-      try {
-        const highlightsCollection = collection(db, "highlights");
-        const highlightsQuery = query(highlightsCollection, where("tags", "array-contains", userId));
-        const highlightsSnapshot = await getDocs(highlightsQuery);
+    // const fetchHighlights = async () => {
+    //   try {
+    //     const highlightsCollection = collection(db, "highlights");
+    //     const highlightsQuery = query(highlightsCollection, where("tags", "array-contains", userId));
+    //     const highlightsSnapshot = await getDocs(highlightsQuery);
 
-        const highlightsWithNames = await Promise.all(
-          highlightsSnapshot.docs.map(async (highlightDoc) => {
-            const highlightData = highlightDoc.data();
-            const tagNames = await Promise.all(
-              highlightData.tags.map(async (tagId: string) => {
-                const tagDoc = await getDoc(doc(db, "users", tagId));
-                return tagDoc.exists() ? tagDoc.data()?.name || "Unknown" : "Unknown";
-              })
-            );
-            return { ...highlightData, tags: tagNames, id: highlightDoc.id };
-          })
-        );
+    //     const highlightsWithNames = await Promise.all(
+    //       highlightsSnapshot.docs.map(async (highlightDoc) => {
+    //         const highlightData = highlightDoc.data();
+    //         const tagNames = await Promise.all(
+    //           highlightData.tags.map(async (tagId: string) => {
+    //             const tagDoc = await getDoc(doc(db, "users", tagId));
+    //             return tagDoc.exists() ? tagDoc.data()?.name || "Unknown" : "Unknown";
+    //           })
+    //         );
+    //         return { ...highlightData, tags: tagNames, id: highlightDoc.id };
+    //       })
+    //     );
 
-        setHighlights(highlightsWithNames);
-      } catch (error) {
-        console.error("Error fetching highlights:", error);
-      }
-    };
+    //     setHighlights(highlightsWithNames);
+    //   } catch (error) {
+    //     console.error("Error fetching highlights:", error);
+    //   }
+    // };
 
     const fetchUsers = async () => {
       try {
@@ -55,7 +57,7 @@ const HighlightComponent: React.FC<{ userId: string }> = ({ userId }) => {
     };
     
 
-    fetchHighlights();
+    // fetchHighlights();
     fetchUsers();
   }, [userId]);
 
@@ -78,6 +80,7 @@ const HighlightComponent: React.FC<{ userId: string }> = ({ userId }) => {
   
         await addDoc(collection(db, "highlights"), highlightData);
         message.success("Highlight uploaded successfully!");
+        navigate("/");
 
         const username = await getUserNameFromId(userId);
   
@@ -150,17 +153,17 @@ const HighlightComponent: React.FC<{ userId: string }> = ({ userId }) => {
         </Form.Item>
       </Form>
 
-      <Divider>Your Highlights</Divider>
+      {/* <Divider>Your Highlights</Divider>
       <Carousel autoplay dots={true} infinite style={{ width: "100%" }}>
       {highlights.map((highlight) => (
         <Card
           key={highlight.id}
           style={{
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-            borderRadius: "12px",
-            overflow: "hidden",
-            margin: "10px 0",
-            textAlign: "center",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
+        borderRadius: "12px",
+        overflow: "hidden",
+        margin: "10px 0",
+        textAlign: "center",
           }}
           cover={<img alt="highlight" src={highlight.image} style={{ maxHeight: 400, width: "100%", objectFit: "contain", borderRadius: "12px 12px 0 0" }} />}
         >
@@ -168,16 +171,16 @@ const HighlightComponent: React.FC<{ userId: string }> = ({ userId }) => {
           <Divider style={{ margin: "10px 0" }} />
           <Text type="secondary" style={{ color: "#6e8efb" }}>Tags: {highlight.tags?.join(", ") || "None"}</Text>
           <Button
-            type="text"
-            icon={<DeleteOutlined style={{ color: "red" }} />}
-            onClick={() => handleDelete(highlight.id)}
-            style={{ marginTop: "10px" }}
+        type="text"
+        icon={<DeleteOutlined style={{ color: "red" }} />}
+        onClick={() => handleDelete(highlight.id)}
+        style={{ marginTop: "10px" }}
           >
-            Delete
+        Delete
           </Button>
         </Card>
       ))}
-    </Carousel>
+        </Carousel> */}
     </div>
   );
 };
