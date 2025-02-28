@@ -37,6 +37,7 @@ const App: React.FC = () => {
         <Route path="/challenge/:challengeName" element={<ChallengeImages />} />
         <Route path="/wall" element={<TestimonialsOverview />} />
         <Route path="/highlights" element={<HighlightsPage />} />
+        <Route path="/stats" element={<TopProfilesStats />} />
       </Routes>
     </Router>
   );

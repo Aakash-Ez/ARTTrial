@@ -3,10 +3,11 @@ import { Input, Row, Col, Card, Avatar, Button, Typography, Divider, List, Layou
 import { EditOutlined, MessageOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
-import { collection, getDocs, query, orderBy, limit, doc, getDoc } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, doc, getDoc, where } from "firebase/firestore";
 import ForumPage from "../ForumPage/ForumPage";
 import ProfileCompletionCheck from "../ProfileCompletionCheck/ProfileCompletionCheck";
 import usersBatch from "./users_with_batch.json";
+import { writer } from "repl";
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Content, Sider } = Layout;
@@ -48,27 +49,52 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
     const fetchLatestTestimonials = async () => {
       try {
         const testimonialsCollection = collection(db, "testimonials");
-        const testimonialQuery = query(
+    
+        // Query for testimonials with writer < "jgzg4mhtdTdc16dyJp9aLj2718E3"
+        const testimonialQueryLess = query(
           testimonialsCollection,
+          where("writer", "<", "jgzg4mhtdTdc16dyJp9aLj2718E3"),
+          orderBy("writer"),
           orderBy("timestamp", "desc"),
-          limit(3) // Fetch only the latest 3 testimonials
+          limit(3)
         );
-        const testimonialDocs = await getDocs(testimonialQuery);
+    
+        // Query for testimonials with writer > "jgzg4mhtdTdc16dyJp9aLj2718E3"
+        const testimonialQueryGreater = query(
+          testimonialsCollection,
+          where("writer", ">", "jgzg4mhtdTdc16dyJp9aLj2718E3"),
+          orderBy("writer"),
+          orderBy("timestamp", "desc"),
+          limit(3)
+        );
+    
+        // Fetch both sets of testimonials
+        const [testimonialDocsLess, testimonialDocsGreater] = await Promise.all([
+          getDocs(testimonialQueryLess),
+          getDocs(testimonialQueryGreater)
+        ]);
+    
+        // Combine and sort by timestamp (descending)
+        const combinedTestimonials = [...testimonialDocsLess.docs, ...testimonialDocsGreater.docs]
+          .map(doc => ({ id: doc.id, ...doc.data(), timestamp: doc.data().timestamp?.seconds || 0, writer: doc.data().writer, receiver: doc.data().receiver }))
+          .sort((a, b) => b.timestamp - a.timestamp) // Sort newest first
+          .slice(0, 3); // Get only the latest 3
+    
+        // Fetch names for each testimonial
         const testimonialsWithNames = await Promise.all(
-          testimonialDocs.docs.map(async (doc) => {
-            const data = doc.data();
-            return {
-              ...data,
-              writerName: await getUserNameFromId(data.writer),
-              receiverName: await getUserNameFromId(data.receiver)
-            };
-          })
+          combinedTestimonials.map(async (testimonial) => ({
+            ...testimonial,
+            writerName: await getUserNameFromId(testimonial.writer),
+            receiverName: await getUserNameFromId(testimonial.receiver)
+          }))
         );
+        console.log(testimonialsWithNames)
         setRandomTestimonials(testimonialsWithNames);
       } catch (error) {
         console.error("Error fetching testimonials:", error);
       }
     };
+    
   
 
     useEffect(() => {
