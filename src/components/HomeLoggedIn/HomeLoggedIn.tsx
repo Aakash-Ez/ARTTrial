@@ -3,7 +3,7 @@ import { Input, Row, Col, Card, Avatar, Button, Typography, Divider, List, Layou
 import { EditOutlined, MessageOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { db } from "../../firebase";
-import { collection, getDocs, query, orderBy, limit, doc, getDoc, where } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, limit, doc, getDoc } from "firebase/firestore";
 import ForumPage from "../ForumPage/ForumPage";
 import ProfileCompletionCheck from "../ProfileCompletionCheck/ProfileCompletionCheck";
 import usersBatch from "./users_with_batch.json";
@@ -46,33 +46,29 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
       }
     };
     const fetchLatestTestimonials = async () => {
-  try {
-    const testimonialsCollection = collection(db, "testimonials");
-    const testimonialQuery = query(
-      testimonialsCollection,
-      where("show", "==", true), // Only fetch testimonials where show is true
-      orderBy("timestamp", "desc"),
-      limit(3) // Fetch only the latest 3 testimonials
-    );
-    
-    const testimonialDocs = await getDocs(testimonialQuery);
-    const testimonialsWithNames = await Promise.all(
-      testimonialDocs.docs.map(async (doc) => {
-        const data = doc.data();
-        return {
-          ...data,
-          writerName: await getUserNameFromId(data.writer),
-          receiverName: await getUserNameFromId(data.receiver),
-        };
-      })
-    );
-
-    setRandomTestimonials(testimonialsWithNames);
-  } catch (error) {
-    console.error("Error fetching testimonials:", error);
-  }
-};
-
+      try {
+        const testimonialsCollection = collection(db, "testimonials");
+        const testimonialQuery = query(
+          testimonialsCollection,
+          orderBy("timestamp", "desc"),
+          limit(3) // Fetch only the latest 3 testimonials
+        );
+        const testimonialDocs = await getDocs(testimonialQuery);
+        const testimonialsWithNames = await Promise.all(
+          testimonialDocs.docs.map(async (doc) => {
+            const data = doc.data();
+            return {
+              ...data,
+              writerName: await getUserNameFromId(data.writer),
+              receiverName: await getUserNameFromId(data.receiver)
+            };
+          })
+        );
+        setRandomTestimonials(testimonialsWithNames);
+      } catch (error) {
+        console.error("Error fetching testimonials:", error);
+      }
+    };
   
 
     useEffect(() => {
