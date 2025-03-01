@@ -1,78 +1,76 @@
 import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes, useLocation } from "react-router-dom";
+import SignUp from "./components/SignUp/SignUp";
+import NavBar from "./components/NavBar/NavBar";
+import HomePage from "./components/HomePage/HomePage";
+import WriteTestimonialPage from "./components/WriteTestimonialPage/WriteTestimonialPage";
+import { getCurrentUserInfo } from "./auth";
+import TestimonialsPage from "./components/TestimonialsPage/TestimonialsPage";
+import UserProfilePageWrapper from "./components/UserProfilePage/UserProfilePageWrapper";
+import MemoryMapPage from "./components/MemoryMapPage/MemoryMapPage";
+import FeaturesPage from "./components/FeaturesPage/FeaturesPage";
+import EventsPage from "./components/EventsPage/EventsPage";
+import DisappearingTextPage from "./components/DisappearingTextPage/DisappearingTextPage";
+import ChallengeImages from "./components/ChallengeImages/ChallengeImages";
+import ForumPage from "./components/ForumPage/ForumPage";
+import PollPage from "./components/PollPage/PollPage";
+import TestimonialsOverview from "./components/TestimonialsOverview/TestimonialsOverview";
+import HighlightsPage from "./components/HighlightsPage/HighlightsPage";
+import TopProfilesStats from "./components/TopProfilesStats/TopProfilesStats";
+import RemovedMessage from "./components/Removed/Removed";
 
 const App: React.FC = () => {
-  const [animate, setAnimate] = useState(false);
-
-  useEffect(() => {
-    setAnimate(true);
-  }, []);
-
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        height: "100vh",
-        backgroundColor: "#f8f8f8"
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "1rem",
-          backgroundColor: "#fee2e2",
-          border: "1px solid #fca5a5",
-          borderRadius: "16px",
-          boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-          maxWidth: "300px",
-          opacity: animate ? 1 : 0,
-          transform: animate ? "scale(1) translateY(0)" : "scale(0.9) translateY(-10px)",
-          transition: "opacity 0.5s ease-in-out, transform 0.5s ease-in-out"
-        }}
-      >
-        <div
-          style={{
-            marginRight: "8px",
-            animation: "bounce 1s infinite alternate"
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="red"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 9v4" />
-            <path d="M12 17h.01" />
-            <path d="M10.29 3.86l-8 14A1 1 0 0 0 3 20h16a1 1 0 0 0 .86-1.48l-8-14a1 1 0 0 0-1.72 0z" />
-          </svg>
-        </div>
-        <span style={{ color: "#b91c1c", fontWeight: "bold", fontSize: "1.125rem" }}>Removed</span>
-      </div>
-    </div>
+    <Router>
+      <NavBar />
+      <Routes>
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/features" element={<FeaturesPage />} />
+        <Route path="/forum" element={<ForumPage />} />
+        <Route path="/" element={<HomePage />} />
+        <Route path="/polls" element={<PollPage />} />
+        <Route path="/memory-map" element={<MemoryMapPage />} />
+        <Route path="/testimonials" element={<TestimonialsPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/write-testimonial" element={<WriteTestimonialWrapper />} />
+        <Route path="/profile/:userId" element={<UserProfilePageWrapper />} />
+        <Route path="/disappearing-text" element={<DisappearingTextPage />} />
+        <Route path="/challenge/:challengeName" element={<ChallengeImages />} />
+        <Route path="/wall" element={<TestimonialsOverview />} />
+        <Route path="/highlights" element={<HighlightsPage />} />
+        <Route path="/stats" element={<TopProfilesStats />} />
+      </Routes>
+    </Router>
   );
 };
 
-export default App;
+const WriteTestimonialWrapper: React.FC = () => {
+  const location = useLocation();
+  const receiverId = location.state?.receiverId;
+  const [writerData, setWriterData] = useState<any>(null);
 
-// Add the keyframes for bounce animation
-const style = document.createElement("style");
-style.innerHTML = `
-@keyframes bounce {
-  from {
-    transform: translateY(0);
+  useEffect(() => {
+    const fetchWriterData = async () => {
+      try {
+        const userInfo = await getCurrentUserInfo();
+        setWriterData(userInfo);
+      } catch (error) {
+        console.error("Error fetching writer data:", error);
+      }
+    };
+
+    fetchWriterData();
+  }, []);
+
+  if (!receiverId) {
+    return <div>No receiver specified.</div>;
   }
-  to {
-    transform: translateY(-5px);
+
+  if (!writerData) {
+    return <div>Loading writer information...</div>;
   }
-}
-`;
-document.head.appendChild(style);
+
+  return <WriteTestimonialPage />;
+};
+
+export default App;
