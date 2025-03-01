@@ -74,6 +74,7 @@ const WriteTestimonialPage: React.FC = () => {
         approved: false,
         rank: -1,
         timestamp: Timestamp.now(),
+        show: true
       };
 
       await addDoc(collection(db, "testimonials"), testimonialData);
