@@ -4,7 +4,7 @@ import { collection, getDocs, updateDoc, doc, deleteDoc, getDoc } from "firebase
 import { db } from "../../firebase";
 import { getCurrentUserInfo } from "../../auth";
 import { createEventLog } from "../../utilities/CreateEventLog";
-import { ArrowUpOutlined, ArrowDownOutlined, CheckOutlined, CloseOutlined, SmileOutlined, EditOutlined } from "@ant-design/icons";
+import { ArrowUpOutlined, ArrowDownOutlined, CheckOutlined, CloseOutlined, SmileOutlined, EditOutlined, ToTopOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
@@ -76,6 +76,39 @@ const TestimonialsPage: React.FC = () => {
 
     fetchUserData();
   }, []);
+
+  const pushToTop = async (index: number) => {
+    const newTestimonials = [...testimonials];
+  
+    // Get the testimonial to move to the top
+    const testimonialToMove = newTestimonials[index];
+  
+    // Shift the rank of all testimonials before the selected index by 1
+    for (let i = 0; i < index; i++) {
+      newTestimonials[i].rank += 1;
+    }
+  
+    // Set the rank of the selected testimonial to 0 (top)
+    testimonialToMove.rank = 0;
+  
+    // Move the testimonial to the top of the array
+    newTestimonials.splice(index, 1);
+    newTestimonials.unshift(testimonialToMove);
+  
+    setTestimonials(newTestimonials);
+  
+    try {
+      // Update the ranks in the database
+      for (let i = 0; i < newTestimonials.length; i++) {
+        await updateDoc(doc(db, "testimonials", newTestimonials[i].id), { rank: i });
+      }
+      message.success("Testimonial pushed to the top successfully!");
+    } catch (error) {
+      console.error("Error updating testimonial order:", error);
+      message.error("Failed to update order. Please try again.");
+    }
+  };
+  
 
   const moveTestimonial = async (index: number, direction: "up" | "down") => {
     const newTestimonials = [...testimonials];
@@ -247,6 +280,11 @@ const TestimonialsPage: React.FC = () => {
                   icon={<EditOutlined />}
                   style={{ marginLeft: "8px" }}
                   onClick={() => editTestimonial(index)}
+                />
+                <Button
+                  icon={<ToTopOutlined />}
+                  onClick={() => pushToTop(index)}
+                  style={{ marginLeft: "8px" }} 
                 />
               </div>
 
