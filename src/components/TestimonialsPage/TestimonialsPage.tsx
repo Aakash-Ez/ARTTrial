@@ -4,7 +4,8 @@ import { collection, getDocs, updateDoc, doc, deleteDoc, getDoc } from "firebase
 import { db } from "../../firebase";
 import { getCurrentUserInfo } from "../../auth";
 import { createEventLog } from "../../utilities/CreateEventLog";
-import { ArrowUpOutlined, ArrowDownOutlined, CheckOutlined, CloseOutlined, SmileOutlined } from "@ant-design/icons";
+import { ArrowUpOutlined, ArrowDownOutlined, CheckOutlined, CloseOutlined, SmileOutlined, EditOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -27,6 +28,7 @@ const TestimonialsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+    const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -95,6 +97,13 @@ const TestimonialsPage: React.FC = () => {
       console.error("Error updating testimonial order:", error);
       message.error("Failed to update order. Please try again.");
     }
+  };
+
+  const editTestimonial = async (index: number) => {
+    const newTestimonials = [...testimonials];
+
+    console.log("Editing testimonial:", newTestimonials[index]);
+    navigate("/edit-testimonial", { state: { testimonial: newTestimonials[index] } });
   };
 
   const handleApproval = async (id: string, approve: boolean) => {
@@ -233,6 +242,11 @@ const TestimonialsPage: React.FC = () => {
                   icon={<ArrowDownOutlined />}
                   disabled={index === testimonials.length - 1}
                   onClick={() => moveTestimonial(index, "down")}
+                />
+                <Button
+                  icon={<EditOutlined />}
+                  style={{ marginLeft: "8px" }}
+                  onClick={() => editTestimonial(index)}
                 />
               </div>
 

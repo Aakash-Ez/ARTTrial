@@ -18,6 +18,7 @@ import TestimonialsOverview from "./components/TestimonialsOverview/Testimonials
 import HighlightsPage from "./components/HighlightsPage/HighlightsPage";
 import TopProfilesStats from "./components/TopProfilesStats/TopProfilesStats";
 import RemovedMessage from "./components/Removed/Removed";
+import EditTestimonialPage from "./components/EditTestimonialPage/EditTestimonialPage";
 
 const App: React.FC = () => {
   return (
@@ -32,7 +33,7 @@ const App: React.FC = () => {
         <Route path="/memory-map" element={<MemoryMapPage />} />
         <Route path="/testimonials" element={<TestimonialsPage />} />
         <Route path="/events" element={<EventsPage />} />
-        <Route path="/write-testimonial" element={<WriteTestimonialWrapper />} />
+        <Route path="/edit-testimonial" element={<EditTestimonialPage />} />
         <Route path="/profile/:userId" element={<UserProfilePageWrapper />} />
         <Route path="/disappearing-text" element={<DisappearingTextPage />} />
         <Route path="/challenge/:challengeName" element={<ChallengeImages />} />
