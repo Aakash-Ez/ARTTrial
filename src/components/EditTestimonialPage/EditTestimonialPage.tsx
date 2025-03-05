@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { Input, Button, Typography, message, Avatar, Card } from "antd";
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../../firebase";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
 const EditTestimonialPage: React.FC = () => {
-  const navigate = useNavigate();
   const location = useLocation();
   const testimonial = location.state?.testimonial;
   const [editedText, setEditedText] = useState(testimonial?.testimonial || "");
@@ -19,9 +18,12 @@ const EditTestimonialPage: React.FC = () => {
   const handleUpdate = async () => {
     try {
       const testimonialRef = doc(db, "testimonials", testimonial.id);
-      await updateDoc(testimonialRef, { testimonial: editedText });
+      await updateDoc(testimonialRef, { 
+        testimonial: editedText, 
+        previousTestimonial: testimonial.testimonial, 
+        editedAt: serverTimestamp()
+      });
       message.success("Testimonial updated successfully!");
-      navigate("/testimonials");
     } catch (error) {
       console.error("Error updating testimonial:", error);
       message.error("Failed to update testimonial.");
