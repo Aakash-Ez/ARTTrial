@@ -147,9 +147,12 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
       const highlightsData = await Promise.all(
         highlightsSnapshot.docs.map(async (doc) => {
           const data = doc.data();
-
+          var cachedImageUrl = data.image
           // Cache and replace image URL
-          const cachedImageUrl = await fetchAndCacheImage(data.image);
+          if(data.directlink) {
+            cachedImageUrl = data.directlink;
+          }
+          
           const userNames = await Promise.all(
             data.tags.map(async (tagId: string) => await getUserNameFromId(tagId))
           );
