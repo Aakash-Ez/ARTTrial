@@ -386,11 +386,20 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
           <Divider />
           {/* Conditional Button rendering */}
           <Button
-            icon={highlight.isImportant ? <MinusOutlined /> : <PlusOutlined />}
-            onClick={() => highlight.isImportant ? markUnimportantHighlight(highlight.id) : markImportantHighlight(highlight.id)}
-            type="primary"
-            block
-          >
+  icon={highlight.isImportant ? <MinusOutlined /> : <PlusOutlined />}
+  onClick={() =>
+    highlight.isImportant
+      ? markUnimportantHighlight(highlight.id)
+      : markImportantHighlight(highlight.id)
+  }
+  type="primary"
+  block
+  style={{
+    backgroundColor: highlight.isImportant ? "red" : "green",
+    borderColor: highlight.isImportant ? "red" : "green",
+  }}
+>
+
             {highlight.isImportant ? "Unmark as Important" : "Mark as Important"}
           </Button>
         </Card>
