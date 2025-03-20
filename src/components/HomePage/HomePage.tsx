@@ -132,7 +132,7 @@ const HomePage: React.FC = () => {
           <div style={{ flex: "1 1 500px", padding: "20px" }}>
             <Title>Welcome to SJMSOM Alumni Portal</Title>
             <Text
-              style={{ fontSize: "18px", lineHeight: "1.8", color: "#f0f0f0" }}
+              style={{ fontSize: "18px", lineHeight: "1.8" }}
             >
               Connect, share, and grow with the vibrant SJMSOM alumni community. Stay
               engaged with the latest events, news, and networking opportunities.
