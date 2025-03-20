@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ARTPortal</string>
+    <string name="title_activity_main">ARTPortal</string>
+    <string name="package_name">in.sjmsom.alumni</string>
+    <string name="custom_url_scheme">in.sjmsom.alumni</string>
+</resources>

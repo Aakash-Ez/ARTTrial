@@ -13,6 +13,7 @@ import { getCurrentUserInfo } from "../../auth";
 import AvatarEditor from "./AvatarEditor";
 
 import { openDB } from "idb"; // Import IndexedDB wrapper
+import LinkedInFetcher from "../LinkedInFetcher/LinkedInFetcher";
 
 // Open or create IndexedDB
 const getDB = async () => {
@@ -360,6 +361,15 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
               </Col>
             </Row>
 
+            {/* Profile Highlights */}
+            <Divider>Profile Highlights</Divider>
+            
+            {userId === currentUserId ? (
+              <UserProfileDetails userId={userId} />
+            ) : (
+              <UserProfileSummary userId={userId} />
+            )}
+
             <Divider>Highlights</Divider>
 {highlights.length > 0 ? (
   <Row gutter={[16, 16]} justify="center">
@@ -409,15 +419,6 @@ const UserProfilePage: React.FC<{ userId: string }> = ({ userId }) => {
 ) : (
   <Text>No highlights available.</Text>
 )}
-
-            {/* Profile Highlights */}
-            <Divider>Profile Highlights</Divider>
-            
-            {userId === currentUserId ? (
-              <UserProfileDetails userId={userId} />
-            ) : (
-              <UserProfileSummary userId={userId} />
-            )}
 
             {/* Public Messages */}
             <Divider>Messages</Divider>

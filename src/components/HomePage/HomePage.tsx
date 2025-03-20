@@ -28,23 +28,24 @@ const { Title, Text } = Typography;
 
 const features = [
   {
-    icon: <SmileOutlined style={{ fontSize: "24px", color: "#fff" }} />,
-    title: "Reconnect with Classmates",
-    description: "Find your batchmates and relive cherished memories together.",
+    icon: <SmileOutlined style={{ fontSize: "24px" }} />,
+    title: "Reconnect with Alumni",
+    description: "Find and network with SJMSOM alumni across the world.",
   },
   {
-    icon: <BulbOutlined style={{ fontSize: "24px", color: "#fff" }} />,
-    title: "Share Your Journey",
+    icon: <BulbOutlined style={{ fontSize: "24px" }} />,
+    title: "Share Your Achievements",
     description:
-      "Post photos, testimonials, and milestones from your SOM25 experience.",
+      "Post career milestones, insights, and success stories to inspire others.",
   },
   {
-    icon: <TrophyOutlined style={{ fontSize: "24px", color: "#fff" }} />,
-    title: "Participate in Challenges",
+    icon: <TrophyOutlined style={{ fontSize: "24px" }} />,
+    title: "Participate in Events",
     description:
-      "Join exciting challenges and showcase your memorable moments.",
+      "Stay updated on upcoming alumni meets, webinars, and networking opportunities.",
   },
 ];
+
 
 const HomePage: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -113,7 +114,6 @@ const HomePage: React.FC = () => {
     <Layout
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #6e8efb, #a777e3)",
       }}
     >
       <Content style={{ padding: "20px" }}>
@@ -129,14 +129,13 @@ const HomePage: React.FC = () => {
             marginTop: "20px",
           }}
         >
-          <div style={{ flex: "1 1 500px", padding: "20px", color: "#fff" }}>
-            <Title style={{ color: "#fff" }}>Welcome to SOM25 Yearbook</Title>
+          <div style={{ flex: "1 1 500px", padding: "20px" }}>
+            <Title>Welcome to SJMSOM Alumni Portal</Title>
             <Text
               style={{ fontSize: "18px", lineHeight: "1.8", color: "#f0f0f0" }}
             >
-              Discover memories, share your journey, and connect with
-              classmates. This is your space to cherish and relive unforgettable
-              moments.
+              Connect, share, and grow with the vibrant SJMSOM alumni community. Stay
+              engaged with the latest events, news, and networking opportunities.
             </Text>
             <List
               style={{ marginTop: "20px" }}
@@ -145,7 +144,7 @@ const HomePage: React.FC = () => {
                 <List.Item>
                   <Card
                     bordered={false}
-                    style={{ background: "#ffffff22", width: "100%" }}
+                    style={{ width: "100%" }}
                   >
                     <div
                       style={{
@@ -156,10 +155,10 @@ const HomePage: React.FC = () => {
                     >
                       {item.icon}
                       <div>
-                        <Title level={5} style={{ margin: 0, color: "#fff" }}>
+                        <Title level={5} style={{ margin: 0 }}>
                           {item.title}
                         </Title>
-                        <Text style={{ color: "#f0f0f0" }}>
+                        <Text>
                           {item.description}
                         </Text>
                       </div>
@@ -174,7 +173,7 @@ const HomePage: React.FC = () => {
               style={{ marginTop: "20px" }}
               onClick={() => navigate("/features")}
             >
-              Explore Yearbook
+              Explore Connections
             </Button>
           </div>
 
@@ -232,11 +231,11 @@ const HomePage: React.FC = () => {
         </div>
       </Content>
       <Footer
-        style={{ textAlign: "center", color: "#f0f0f0", background: "#6e8efb" }}
+        style={{ textAlign: "center", color: "#f0f0f0", background: "rgb(221, 99, 12)" }}
       >
         {" "}
-        SOM25 Yearbook ©2025 | Created to cherish and share memories | Presented
-        by the Cultural Council{" "}
+        SJMSOM Alumni Portal ©2025 | Created to cherish and share memories | Presented
+        by SOM25/26{" "}
       </Footer>
     </Layout>
   );
