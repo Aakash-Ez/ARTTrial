@@ -7,6 +7,7 @@ import { collection, getDocs, query, orderBy, limit, doc, getDoc } from "firebas
 import ForumPage from "../ForumPage/ForumPage";
 import ProfileCompletionCheck from "../ProfileCompletionCheck/ProfileCompletionCheck";
 import usersBatch from "./users_with_batch.json";
+import RecentBlogs from "../RecentBlogs/RecentBlogs";
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Content, Sider } = Layout;
@@ -146,15 +147,8 @@ const HomeLoggedIn: React.FC<{ userData: any; userId: string }> = ({ userData, u
         </div>
 
         <div>
-          <Divider>Random Testimonials</Divider>
-          {randomTestimonials.map((testimonial) => (
-            <Card key={testimonial.id} hoverable onClick={() => navigate(`/profile/${testimonial.receiver}`)} style={{ width: "100%", boxShadow: "0 2px 8px rgba(0,0,0,0.1)", background: "#ffffff", borderRadius: "8px", marginBottom: "10px" }}>
-              <Text style={{ fontWeight: "bold", color: "#6e8efb" }}>{testimonial.testimonial}</Text>
-              <Text type="secondary" style={{ display: "block", marginTop: "10px", fontSize: "12px", color: "#888" }}>
-                - {testimonial.writerName} to {testimonial.receiverName}
-              </Text>
-            </Card>
-          ))}
+          <Divider>Recent Blogs</Divider>
+          <RecentBlogs />
         </div>
       </Content>
     </Layout>

@@ -19,6 +19,8 @@ import HighlightsPage from "./components/HighlightsPage/HighlightsPage";
 import TopProfilesStats from "./components/TopProfilesStats/TopProfilesStats";
 import RemovedMessage from "./components/Removed/Removed";
 import EditTestimonialPage from "./components/EditTestimonialPage/EditTestimonialPage";
+import WriteBlog from "./components/WriteBlog/WriteBlog";
+import BlogView from "./components/BlogView/BlogView";
 
 const App: React.FC = () => {
   return (
@@ -40,6 +42,9 @@ const App: React.FC = () => {
         <Route path="/wall" element={<TestimonialsOverview />} />
         <Route path="/highlights" element={<HighlightsPage />} />
         <Route path="/stats" element={<TopProfilesStats />} />
+        <Route path="/write-blog" element={<WriteBlog />} />
+        <Route path="/blog/:id" element={<BlogView />} />
+
       </Routes>
     </Router>
   );
